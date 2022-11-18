@@ -1,0 +1,82 @@
+{% extends 'layout.html'%}
+{%block content %}     
+
+	<div class="ddd container-fluid px-1 px-md-5 px-lg-1 px-xl-5 py-5 mx-auto">
+    <div class="card card0 border-0">
+        <div class="row d-flex">
+
+            <div class="col-lg-6">
+                <div class="card2 card border-0 px-4 py-5">
+                    <div class="row mb-4 px-3">
+                        <h6 class="mb-0 mr-4 mt-2">Sign in with</h6>
+                        <div class="facebook text-center mr-3">
+                            <div class="fa fa-facebook"></div>
+                        </div>
+                        <div class="twitter text-center mr-3">
+                            <div class="fa fa-twitter"></div>
+                        </div>
+                        <div class="linkedin text-center mr-3">
+                            <div class="fa fa-linkedin"></div>
+                        </div>
+                    </div>
+                    <div class="row px-3 mb-4">
+                        <div class="line"></div> <small class="or text-center">Or</small>
+                        <div class="line"></div>
+                    </div>
+                    <div class="content-section">
+        <form method="POST" action="">
+         {{ form.hidden_tag()}}
+        <fieldset class="form-group">
+               <div class="form-group"">
+              {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                  {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                      {{ message }}
+                    </div>
+                  {% endfor %}
+                {% endif %}
+              {% endwith %}
+            </div>
+            <div class="form-group">
+                {{ form.phonenumber.label(class="form-control-label")}} {% if form.phonenumber.errors%} {{ form.phonenumber(class="form-control form-control-lg is-invalid")}}
+                <div class="invalid-feedback">
+                    {%for error in form.phonenumber.errors %}
+                    <span> {{ error}}</span> {% endfor%}
+                </div>
+                {% else%} {{ form.phonenumber(class="form-control form-control-lg ")}} {%endif%}
+            </div>
+            <div class="form-group">
+                {{ form.password.label(class="form-control-label")}} {% if form.password.errors%} {{ form.password(class="form-control form-control-lg is-invalid")}}
+                <div class="invalid-feedback">
+                    {%for error in form.password.errors %}
+                    <span> {{ error}}</span> {% endfor%}
+                </div>
+                {% else%} {{ form.password(class="form-control form-control-lg ")}} {%endif%}
+            </div>
+            <div class="form-check">
+                {{ form.remember(class="check-input")}} {{ form.remember.label(class="check-label")}}
+            </div>
+        </fieldset>
+        <div class="form-group">
+            {{ form.submit(class="btn btn-secondary")}}
+            <small class="text-muted" ml-2>
+                <a href="{{ url_for('reset_password') }}">forgot password?</a>
+            </small>
+        </div>
+    </form>
+</div>
+<div class="border-top pt-3">
+    <small class="text-muted">
+            need  an account?<a href="{{ url_for('register')}}">Sign up now</a>
+        </small>
+</div>
+        
+            </div>
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" href="../static/css/login.css">
+{% endblock%}>
+

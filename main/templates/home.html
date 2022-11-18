@@ -1,0 +1,215 @@
+{% extends 'layout.html'%}
+{%block content %}
+    <!--main===============================================================-->
+    <section id="main">
+    <!--main-content----------------------------->
+    <div class="main-content">
+        <!--text------------>
+        <div class="main-text">
+                    <div class="col-md-8">
+          {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+              {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                  {{ message }}
+                </div>
+              {% endfor %}
+            {% endif %}
+          {% endwith %}
+        </div>
+
+            <span>Collection</span>
+            <h1>Comfortable T-Shirts with Great Comfort</h1>
+            <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Veniam, eveniet necessitatibus id cum cumque corrupti delectus, eligendi labore possimus beatae.</p>
+            <a href="#products">Shop Now</a>
+        </div>
+        <!--img------------->
+        <div class="main-img">
+            <img alt="shirt" src="../static/img/5.jpg">
+        </div>
+    </div>
+    </section>
+<!--==Categories==============================================-->
+<section id="categories">
+    <h2>Categories</h2>
+    <div class="category-container">
+       <!-- {% for category in categorys%}
+    <!--box------------------------
+    <a href="#" class="category-box">
+        <img alt="shirts" src="../static/img/5.jpg">
+        <span>Shirts</span>
+    </a>
+        {% endfor %}-->
+        <a href="{{ url_for('categories', category = 'furnitures') }}" class="category-box">
+            <img alt="furnitures" src="../static/img/furnitures.jpeg">
+            <span>Furnitures</span>
+        </a>
+        <a href="{{ url_for('categories', category = 'bedding') }}" class="category-box">
+            <img alt="bedding" src="../static/img/beddings.jpg">
+            <span>Bedding</span>
+        </a>
+        <a href="{{ url_for('categories', category = 'clothes') }}" class="category-box">
+            <img alt="clothes" src="../static/img/clothings.jpeg">
+            <span>Clothes</span>
+        </a>
+        <a href="{{ url_for('categories', category = 'electronics') }}" class="category-box">
+            <img alt="electronics" src="../static/img/electronics.jpeg">
+            <span>Electronics</span>
+        </a>
+    </div>
+</section>
+<!--==Feature=product===============================================================-->
+<section id="feature-product">
+    <h1>Feature Product</h1>
+    <div class="feature-product-container">
+        {% for featured_post in featured_posts%}
+        <!--box-1---------------------->
+        <div class="feature-product-box">
+            <!--img------------------>
+            <div class="product-feature-img">
+                <img alt="shirt" src="../static/img/5.jpg">
+            </div>
+            <!--text-contaier--------->
+            <div class="product-feature-text-container">
+                <!--text-->
+                <div class="product-feature-text">
+                    <strong> {{ featured_post['name']  }} </strong>
+                    <span>${{ featured_post['price']  }}</span>
+
+                </div>
+                
+            </div>
+        </div>
+        {% endfor %}
+     
+    </div>
+</section>
+    <!--==banner==============================================================-->
+    <section id="banner">
+        <!--text------>
+        <div class="banner-text">
+            <strong>Beautifull Sofa</strong>
+            <span>From $239</span>
+            <p>Long Lasting and Confortable to use. This is only for you.</p>
+            <a href="#">Shop Now</a>
+        </div>
+        <!--img------->
+        <div class="banner-img">
+            <img alt="" src="../static/img/5.jpg">
+        </div> 
+    </section>
+    <!--==products=============================================================-->
+    <section id="products">
+        <!--heading------------------------------------------------->
+        <div class="product-heading">
+            <h3>Our Product</h3>
+        </div>
+        <!--product-container--------------------------------------->
+        <div class="feature-product-container">
+
+            {% for post in posts %}
+            <!--box-1---------------------->
+            <div class="feature-product-box">
+    
+                <!--img------------------>
+                <div class="product-feature-img">
+                    <a href="{{url_for('product', id=post.id)}}"> <img width="100" height="100"  src="{{ url_for('static', filename='images/' + post.image_file) }}" ></a>
+                </div>
+    
+                <!--text-contaier--------->
+                <div class="product-feature-text-container">
+                    <!--text-->
+                    <div class="product-feature-text">
+                    <strong> {{ post['name']  }} </strong>
+                    <span>${{ post['price']  }}</span>
+                    <i class="fas fa-map-marker-alt">{{ post['location'] }}.</i>
+                    </div>
+
+                    
+                </div>
+    
+            </div>
+            {% endfor %}
+    
+ 
+            
+        </div>
+    </section>
+    <!--==banner==============================================================-->
+    <section id="banner" class="banner-reverse">
+        <!--text------>
+        <div class="banner-text">
+            <strong>Beautifull Sofa</strong>
+            <span>From $239</span>
+            <p>Long Lasting and Confortable to use. This is only for you.</p>
+            <a href="#">Shop Now</a>
+        </div>
+        <!--img------->
+        <div class="banner-img">
+            <img alt="" src="../static/img/5.jpg">
+        </div> 
+    </section>
+    <!--==Latest-News=========================================================-->
+    <section id="news">
+        <!--heading-------->
+        <div class="news-heading">
+            <h3>Latest News</h3>
+        </div>
+        <!--container------>
+        <div class="news-box-container">
+            
+            <!--box------>
+            <div class="news-box">
+                <!--img--->
+                <div class="news-img">
+                    <img alt="news" src="../static/img/5.jpg">
+                    <!--label-->
+                    <div class="news-label">
+                        New
+                    </div>
+                </div>
+                <!--text-->
+                <div class="news-text">
+                    <strong>We Provide You The Best Things</strong>
+                    <span>Admin | Products</span>
+                    <a href="#">Read More</a>
+                </div>
+            </div>
+            <!--box------>
+            <div class="news-box">
+                <!--img--->
+                <div class="news-img">
+                    <img alt="news" src="../static/img/5.jpg">
+                    <!--label-->
+                    <div class="news-label">
+                        New
+                    </div>
+                </div>
+                <!--text-->
+                <div class="news-text">
+                    <strong>We Provide You The Best Things</strong>
+                    <span>Admin | Products</span>
+                    <a href="#">Read More</a>
+                </div>
+            </div>
+            <!--box------>
+            <div class="news-box">
+                <!--img--->
+                <div class="news-img">
+                    <img alt="news" src="../static/img/5.jpg">
+                    <!--label-->
+                    <div class="news-label">
+                        New
+                    </div>
+                </div>
+                <!--text-->
+                <div class="news-text">
+                    <strong>We Provide You The Best Things</strong>
+                    <span>Admin | Products</span>
+                    <a href="#">Read More</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!--==footer=================================================================-->
+   {% endblock%}
