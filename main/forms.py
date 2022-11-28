@@ -39,7 +39,7 @@ class RegistrationForm(FlaskForm):
             raise ValidationError('Please use a different phonenumber.')
     
     def validate_email(self, email):
-        user = User.query.filter_by(username=email.data).first()
+        user = User.query.filter_by(email=email.data).first()
         if user is not None:
             raise ValidationError('Please use a different email.')
 

@@ -17,7 +17,7 @@ app.config['MAIL_SERVER'] = 'smtp.googlemail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USERNAME'] = 'simonkinuthia002@gmail.com'
-app.config['MAIL_PASSWORD'] = 'syvvfiaacptjyrzi'
+app.config['MAIL_PASSWORD'] = 'ddgtughuuyaoafhp'
 mail = Mail(app)
 
 from main import routes

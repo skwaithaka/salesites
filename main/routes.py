@@ -6,10 +6,10 @@ from flask_login import current_user, login_user, login_required, logout_user
 import secrets
 import os
 from PIL import Image
-from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer,URLSafeTimedSerializer, SignatureExpired
 from flask_mail import Message
 
-
+s = URLSafeTimedSerializer('Thisisasecret!')
 
 
 
@@ -31,10 +31,17 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(phone_number=form.phonenumber.data).first()
-        if user and bcrypt.check_password_hash(user.password, form.password.data):
-            login_user(user, remember=form.remember.data)
-            next_page = request.args.get('next')
-            return redirect(next_page) if next_page else redirect(url_for('home'))
+        if user:
+            if user.confirmed == False:
+                flash('Account email not confimed! please check your email for confimation link!','danger')
+                redirect(url_for('home'))
+            else:
+                if user and bcrypt.check_password_hash(user.password, form.password.data):
+                    login_user(user, remember=form.remember.data)
+                    next_page = request.args.get('next')
+                    return redirect(next_page) if next_page else redirect(url_for('home'))
+                else:
+                    flash('Login Unsuccessful. Please check email and password', 'danger')
         else:
             flash('Login Unsuccessful. Please check email and password', 'danger')
     return render_template('login.html', title='Login', form=form)
@@ -98,14 +105,37 @@ def register():
         return redirect(url_for('home'))
     form = RegistrationForm()
     if form.validate_on_submit():
+        
+        email = form.email.data
+        token = s.dumps(form.email.data, salt='email-confirm')
+        msg = Message('Confirm Email', sender='simonkinuhia002@gmail.com', recipients=[form.email.data])
+        link = url_for('confirm_email', token=token,email=email, _external=True)
+        msg.body = 'Your link is {}'.format(link)
+        mail.send(msg)
+
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
         username = form.first_name.data + form.last_name.data
         user = User(username=username, email=form.email.data,phone_number=form.phonenumber.data, password=hashed_password)
         database.session.add(user)
         database.session.commit()
-        flash('Your account has been created! You are now able to log in', 'success')
-        return redirect(url_for('login'))
+        flash('Your account has been created! An email has been sent to you registered email. Please verify to be able to login!', 'success')
+        return redirect(url_for('home'))
     return render_template('register.html', title='Register', form=form)
+
+
+@app.route('/confirm_email/<token>/<Email>')
+def confirm_email(token,Email):
+    try:
+        s.loads(token, salt='email-confirm', max_age=3600)
+        user = User.query.filter_by(email=Email).first()
+        if user:
+            user.confirmed = True
+            database.session.commit()
+
+        flash('Email confirmed You can now login','success')
+    except SignatureExpired:
+        flash('The token is expired!','danger')
+    return redirect(url_for('login'))
 
 
 @app.route('/sell', methods=['GET', 'POST'])
@@ -207,10 +237,7 @@ def new_product():
 @app.route('/product/<id>')
 def product(id):
     post = Post.query.filter_by(id=id).first()
-    #post = mongo.db.posts.find_one({'_id': ObjectId(id)})
     posts = Post.query.all()
-    #posts = mongo.db.posts.find({})
-    #phonenumber = mongo.db.users.find_one({'_id': post['product_']})
     phonenumber = User.query.filter_by(id=post.user_id).first()
     
     t = fun()
@@ -229,117 +256,14 @@ def delete_product(product_id):
     database.session.commit()
     flash('Your post has been deleted!', 'success')
     return redirect(url_for('home'))
-    
-
-"""
-
-
-def get_reset_token(email, expires_sec=1800):
-    s = Serializer(app.config['SECRET_KEY'], expires_sec)
-    id = mongo.db.users.find_one({ 'email': email })
-    id = id['_id']
-    return s.dumps({'id': id}).decode('utf-8')
-
-
-
-def pic_name(form_picture):
-    random_hex = secrets.token_hex(8)
-    _, f_ext = os.path.splitext(form_picture.filename)
-    picture_fn = random_hex + f_ext
-
-    return picture_fn
-
 
 @app.route('/search', methods=['GET', 'POST'])
 def search():
     search = request.form.get("search")
-    posts = mongo.db.posts.find(
-        {'$or': [{'name': search}, {'price': search}, {'location': search}]})
-    #posts = mongo.db.posts.find( { 'name': search })
+    posts = Post.query.filter_by(title=search,price=search,content=search)
+    
     print(search)
     return render_template('products.html', posts=posts)
-
-
-
-
-
-
-
-@app.route('/product/<id>')
-def product(id):
-    post = mongo.db.posts.find_one({'_id': ObjectId(id)})
-    posts = mongo.db.posts.find({})
-    phonenumber = mongo.db.users.find_one({'_id': post['product_']})
-    t = fun()
-    phonenumber = phonenumber['phonenumber']
-    img = 'https://chukasales.herokuapp.com//product/{}'.format(post['_id'])
-    url = "https://wa.me/254{}?text={}".format(phonenumber, img)
-    return render_template('product.html', post=post, posts=posts, url=url, bedding_count=t.bedding_count, clothes_count=t.clothes_count, furnitures_count=t.furnitures_count, electronics_count=t.electronics_count)
-
-
-
-
-
-@app.route('/sell', methods=['GET', 'POST'])
-def sell():
-    form = SellForm()
-    if current_user.is_authenticated:
-        user = mongo.db.users.find_one({'_id': current_user._id})
-        print(user['is_activated'])
-        if user['is_activated'] == False:
-            if form.validate_on_submit():
-                newvalues = {"$set": {"is_activated": True}}
-                query = {'_id': current_user._id}
-                mongo.db.users.update_one(query, newvalues)
-                flash('Account activated you can now sell Your product', 'success')
-                return redirect(url_for('home'))
-        else:
-            flash('Account already activated', 'success')
-            next_page = request.args.get('next')
-            return redirect(next_page) if next_page else redirect(url_for('home'))
-    else:
-        flash(f'please login first to sell your product', 'danger')
-        return redirect(url_for('login'))
-
-    return render_template('sell.html', form=form)
-
-
-def send_reset_email(token,email):
-    msg = Message('Password Reset Request',
-                  sender='noreply@demo.com',
-                  recipients=[email])
-    msg.body = f'''To reset your password, visit the following link:
-				{url_for('reset_token', token=token, _external=True)}
-				If you did not make this request then simply ignore this email and no changes will be made.
-				'''
-    mail.send(msg)
-
-
-
-
-@app.route("/reset_token/<token>", methods=['GET', 'POST'])
-def reset_token(token):
-    if current_user.is_authenticated:
-        return redirect(url_for('home'))
-    user = User.verify_reset_token(token)
-    if user is None:
-        flash('That is an invalid or expired token', 'warning')
-        return redirect(url_for('reset_request'))
-    form = ResetPasswordForm()
-    if form.validate_on_submit():
-        hashed_password = bcrypt.generate_password_hash(
-            form.password.data).decode('utf-8')
-        user.password = hashed_password
-        db.session.commit()
-        flash('Your password has been updated! You are now able to log in', 'success')
-        return redirect(url_for('login'))
-    return render_template('reset_token.html', title='Reset Password', form=form)
-
-
-@app.route('/file/<filename>')
-def file(filename):
-    return mongo.send_file(filename)
-
 
 @app.errorhandler(401)
 def page_not_found(e):
@@ -359,6 +283,18 @@ def page_not_found(e):
 @app.errorhandler(410)
 def page_not_found(e):
     return render_template('410.html')
+
+
+
+"""
+
+
+
+
+
+
+
+
 
 # page with categories
 

@@ -14,6 +14,7 @@ class User(database.Model, UserMixin):
     phone_number = database.Column(database.String(120), unique=True, nullable=False)
     image_file = database.Column(database.String(20), nullable=False, default='default.jpg')
     activated = database.Column(database.Boolean, nullable=False, default=False)
+    confirmed = database.Column(database.Boolean, nullable=False, default=False)
     password = database.Column(database.String(60), nullable=False)
     products = database.relationship('Post', backref='author', lazy=True)
 
