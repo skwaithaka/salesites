@@ -1,0 +1,83 @@
+{% extends 'layout.html'%}
+{%block content %}
+
+<h1 class="header" style="
+font-weight: 200px;
+text-transform: capitalize;
+font-size: 70px;
+text-align: center;
+background: #ced7d8;
+border-radius: 20px;
+padding:100px 50px 50px 50px;">Your products !</h1>
+    
+           <div class="container-fluid mt-5 mb-5">
+    <div class="row g-2">
+        <div class="col-md-3">
+            <div class="t-products p-2">
+                <h6 class="text-uppercase">Categories</h6>
+                <div class="p-lists">
+                    <div class=" text-uppercase  d-flex justify-content-between mt-2">
+                        <a href="{{ url_for('categories', category = 'electronics') }}" class="link-dark"> <span class="text-white">Electronics</span> </a>
+                        <span>{{ electronics_count }}</span>
+                    </div>
+                    <div class=" text-uppercase  d-flex justify-content-between mt-2">
+                        <a href="{{ url_for('categories', category='clothes') }}" class="link-dark"> <span class="text-white">Clothes</span> </a>
+                        <span>{{ clothes_count }}</span>
+                    </div>
+                    <div class=" text-uppercase  d-flex justify-content-between mt-2">
+                        <a href="{{ url_for('categories', category = 'bedding')  }}" class="link-dark"> <span class="text-white">Beddings</span> </a>
+                        <span>{{ bedding_count }}</span>
+                    </div>
+                    <div class=" text-uppercase  d-flex justify-content-between mt-2">
+                        <a href="{{ url_for('categories', category = 'furnitures') }}" class="link-dark"> <span class="text-white">Furnitures</span> </a>
+                        <span>{{ furnitures_count }}</span>
+                    </div>
+
+                </div>
+            </div>
+    
+        </div>
+        <div class="col-md-9">
+            <div class="row g-2">
+        {% for post in posts %}
+                <div class="col-md-4">
+                  
+                    <div class="product py-4">
+                        <a href="{{url_for('product', id=post['_id'])}}"><div class="text-center"> <img src="{{ url_for('file' ,filename = post['image1']) }}" width="200"> </div></a>
+                        <div class="about text-center">
+                            <h5>{{ post['name'] }}</h5> <span>${{ post['price'] }}</span>
+                        </div>
+                        <div class="cart-button mt-3 px-2 d-flex justify-content-between align-items-center"> 
+                                <i class="fas fa-map-marker-alt">{{ post['location'] }}.</i>
+                            <!--<div class="add"> <span class="product_fav"><i class="fa fa-heart-o"></i></span> <span class="product_fav"><i class="fa fa-opencart"></i></span> </div>-->
+                        </div>
+                        <a style="padding-bottom: 100px;" href= "{{url_for('home')}}" ><button class="btn btn-info ">EDIT</button></a>
+                        <a href= "{{url_for('home')}}"><button class="btn btn-danger">DELETE</button></a>
+                    </div>
+                    
+                </div>
+               
+      {% endfor %}
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" href="../static//css/view.css">
+
+<script type="text/javascript">
+  function change_image(image){
+
+var container = document.getElementById("main-image");
+
+container.src = image.src;
+}
+
+
+
+document.addEventListener("DOMContentLoaded", function(event) {
+
+});
+</script>
+{% endblock%}
